@@ -1,0 +1,27 @@
+[package]
+name = "smart_format"
+description = "a better, more versatile, format! macro"
+authors = ["lasm <avecpps@protonmail.com>"]
+version = "1.0.0"
+edition = "2024"
+repository = "https://github.com/uwulasm/smart_format"
+license = "MIT"
+readme = "README.md"
+keywords = [
+    "formatting",
+    "strings",
+    "macros",
+    "interpolation",
+]
+categories = [
+    "value-formatting",
+    "development-tools",
+]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0.106"
+quote = "1.0.44"
+syn = "2.0.115"
