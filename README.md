@@ -1,5 +1,5 @@
 # smart_format
-this crate adds the `formats!()` macro, which works just like the standard format!(), except it allows arbitrary expressions in placeholders. such as:
+this crate adds the `formats!()` macro, which works just like the standard `format!()`, except it allows arbitrary expressions in placeholders. such as:
 
 ```rs
 fn factorial(n: u64) -> u64 {
