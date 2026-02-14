@@ -2,7 +2,7 @@
 name = "formats"
 description = "a better, more versatile, format! macro"
 authors = ["lasm <avecpps@protonmail.com>"]
-version = "1.0.0"
+version = "1.1.0"
 edition = "2024"
 repository = "https://github.com/uwulasm/smart_format"
 license = "MIT"

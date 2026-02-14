@@ -2,9 +2,9 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, LitStr};
 
-#[proc_macro]
-pub fn formats(input: TokenStream) -> TokenStream {
-    let lit = parse_macro_input!(input as LitStr);
+fn parse_format_string(
+    lit: &LitStr,
+) -> Result<(String, Vec<proc_macro2::TokenStream>), TokenStream> {
     let format_str = lit.value();
 
     let mut fmt_string = String::new();
@@ -42,9 +42,9 @@ pub fn formats(input: TokenStream) -> TokenStream {
                 }
 
                 if depth > 0 {
-                    return syn::Error::new(lit.span(), "unclosed `{` in format string")
+                    return Err(syn::Error::new(lit.span(), "unclosed `{` in format string")
                         .to_compile_error()
-                        .into();
+                        .into());
                 }
 
                 let raw_chars: Vec<char> = raw.chars().collect();
@@ -92,7 +92,6 @@ pub fn formats(input: TokenStream) -> TokenStream {
         }
     }
 
-    let fmt_literal = fmt_string;
     let expr_tokens: Vec<proc_macro2::TokenStream> = expressions
         .iter()
         .map(|e| {
@@ -101,9 +100,50 @@ pub fn formats(input: TokenStream) -> TokenStream {
         })
         .collect();
 
-    let expanded = quote! {
-        format!(#fmt_literal, #(#expr_tokens),*)
+    Ok((fmt_string, expr_tokens))
+}
+
+#[proc_macro]
+pub fn formats(input: TokenStream) -> TokenStream {
+    let lit = parse_macro_input!(input as LitStr);
+
+    let (fmt_literal, expr_tokens) = match parse_format_string(&lit) {
+        Ok(v) => v,
+        Err(e) => return e,
     };
 
-    expanded.into()
+    quote! {
+        format!(#fmt_literal, #(#expr_tokens),*)
+    }
+    .into()
+}
+
+#[proc_macro]
+pub fn prints(input: TokenStream) -> TokenStream {
+    let lit = parse_macro_input!(input as LitStr);
+
+    let (fmt_literal, expr_tokens) = match parse_format_string(&lit) {
+        Ok(v) => v,
+        Err(e) => return e,
+    };
+
+    quote! {
+        print!(#fmt_literal, #(#expr_tokens),*)
+    }
+    .into()
+}
+
+#[proc_macro]
+pub fn printlns(input: TokenStream) -> TokenStream {
+    let lit = parse_macro_input!(input as LitStr);
+
+    let (fmt_literal, expr_tokens) = match parse_format_string(&lit) {
+        Ok(v) => v,
+        Err(e) => return e,
+    };
+
+    quote! {
+        println!(#fmt_literal, #(#expr_tokens),*)
+    }
+    .into()
 }
